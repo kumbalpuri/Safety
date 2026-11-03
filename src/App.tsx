@@ -85,12 +85,17 @@ export default function App() {
   // Sync persona workflow
   const handleSetPersona = (newPersona: UserPersona) => {
     setPersona(newPersona);
+    if (activeModule === 'safety') {
+      return;
+    }
     if (newPersona === 'operator') {
       setActiveModule('kaizen');
       setActiveTab('form');
     } else if (newPersona === 'committee') {
       setActiveModule('kaizen');
       setActiveTab('committee');
+    } else if (newPersona === 'coordinator' || newPersona === 'doctor') {
+      setActiveModule('safety');
     } else {
       setActiveModule('global-dashboard');
     }
@@ -742,6 +747,8 @@ export default function App() {
                 onClearInitialAction={() => setInitialSafetyAction(null)}
                 isSidebarHidden={isSidebarHidden}
                 onToggleSidebar={toggleSidebarHidden}
+                persona={persona}
+                setPersona={handleSetPersona}
               />
             )}
 

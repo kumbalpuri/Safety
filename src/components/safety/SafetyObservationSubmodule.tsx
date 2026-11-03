@@ -19,6 +19,7 @@ import {
   ArrowRight,
   Info
 } from 'lucide-react';
+import RiskAssessmentMatrix from './RiskAssessmentMatrix';
 
 interface SafetyObservationSubmoduleProps {
   observations: SafetyObservation[];
@@ -259,78 +260,39 @@ export default function SafetyObservationSubmodule({
 
   return (
     <div className="space-y-6">
-      {/* Submodule Header & Workflow Banner */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs">
-        <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-          <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-xs font-bold text-amber-700 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-mono">
-                Submodule 01 · 2-Stage EHS Process
-              </span>
-              <span className="text-slate-400">·</span>
-              <span className="text-xs text-slate-500 font-mono">Spreadsheet Register Standard</span>
-            </div>
-            <h2 className="text-xl font-bold text-slate-900 mt-1">
-              Safety Observation System
-            </h2>
-            <p className="text-xs text-slate-600 mt-0.5 max-w-3xl">
-              <strong className="text-slate-800">Stage 1:</strong> Anyone in the organisation logs the hazard up to <span className="font-semibold text-slate-800">Before condition</span>.
-              <span className="mx-2 text-slate-300">→</span>
-              <strong className="text-slate-800">Stage 2:</strong> Transferred to <span className="font-semibold text-amber-700">Safety Coordinator</span> to assign <span className="font-semibold text-slate-800">Category A/B/C, 5-Why RCA, ICA/PCA, and Horizontal Deployment</span>.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={handleExportCSV}
-              className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition"
-              title="Download register spreadsheet"
-            >
-              <Download className="w-4 h-4 text-slate-600" />
-              <span>Export CSV</span>
-            </button>
-            <button
-              onClick={() => window.print()}
-              className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition"
-            >
-              <Printer className="w-4 h-4 text-slate-600" />
-              <span>Print Register</span>
-            </button>
-            <button
-              onClick={() => onNavigateRaise ? onNavigateRaise() : setIsRaiseModalOpen(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
-            >
-              <Plus className="w-4 h-4" />
-              <span>Raise Safety Observation</span>
-            </button>
-          </div>
+      {/* Submodule Header */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div>
+          <span className="text-[10px] font-bold text-amber-700 font-mono uppercase tracking-wider">
+            Submodule 01
+          </span>
+          <h2 className="text-lg font-bold text-slate-900">
+            Safety Observation Register
+          </h2>
         </div>
 
-        {/* 2-Stage Workflow Diagram Strip */}
-        <div className="mt-5 pt-4 border-t border-slate-100 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="bg-slate-50 border border-slate-200 rounded-xl p-3.5 flex items-start space-x-3">
-            <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-              1
-            </div>
-            <div className="text-xs">
-              <div className="font-bold text-slate-800">Initiator (Any Employee / Operator)</div>
-              <div className="text-slate-500 mt-0.5">
-                Logs Sr No, Date, Shift, Raised By, Minifactory, Line, Station, Legend (Unsafe Act / Unsafe Condition) &amp; Before Condition description.
-              </div>
-            </div>
-          </div>
-
-          <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-3.5 flex items-start space-x-3">
-            <div className="w-7 h-7 rounded-lg bg-amber-100 text-amber-800 flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-              2
-            </div>
-            <div className="text-xs">
-              <div className="font-bold text-amber-900">Safety Coordinator Review &amp; CAPA</div>
-              <div className="text-amber-800/80 mt-0.5">
-                Fills Category (A, B, C), Immediate Action (ICA), 5-Why Root Cause Analysis, Permanent Action (PCA), Responsibility, Closure Date &amp; Horizontal Deployment.
-              </div>
-            </div>
-          </div>
+        <div className="flex flex-wrap items-center gap-3">
+          <button
+            onClick={handleExportCSV}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
+          >
+            <Download className="w-4 h-4 text-slate-600" />
+            <span>Export CSV</span>
+          </button>
+          <button
+            onClick={() => window.print()}
+            className="flex items-center space-x-1.5 px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-semibold transition cursor-pointer"
+          >
+            <Printer className="w-4 h-4 text-slate-600" />
+            <span>Print</span>
+          </button>
+          <button
+            onClick={() => onNavigateRaise ? onNavigateRaise() : setIsRaiseModalOpen(true)}
+            className="flex items-center space-x-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition shadow-xs cursor-pointer"
+          >
+            <Plus className="w-4 h-4" />
+            <span>Raise Safety Observation</span>
+          </button>
         </div>
       </div>
 
@@ -339,22 +301,18 @@ export default function SafetyObservationSubmodule({
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
           <div className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Total Observations</div>
           <div className="text-2xl font-bold text-slate-900 mt-1 font-mono tabular-nums">{totalCount}</div>
-          <div className="text-[11px] text-slate-500 mt-1">Logged across plant floor</div>
         </div>
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
           <div className="text-xs font-semibold text-amber-600 uppercase tracking-wider">Pending Coordinator</div>
           <div className="text-2xl font-bold text-amber-600 mt-1 font-mono tabular-nums">{pendingCoordCount}</div>
-          <div className="text-[11px] text-amber-700 mt-1">Awaiting Category &amp; RCA</div>
         </div>
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
-          <div className="text-xs font-semibold text-rose-600 uppercase tracking-wider">Active Open/In-Prog</div>
+          <div className="text-xs font-semibold text-rose-600 uppercase tracking-wider">Open / In-Progress</div>
           <div className="text-2xl font-bold text-rose-600 mt-1 font-mono tabular-nums">{openCount}</div>
-          <div className="text-[11px] text-rose-700 mt-1">Action items under execution</div>
         </div>
         <div className="bg-white border border-slate-200 rounded-xl p-4 shadow-2xs">
-          <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Closed &amp; Verified</div>
+          <div className="text-xs font-semibold text-emerald-600 uppercase tracking-wider">Closed</div>
           <div className="text-2xl font-bold text-emerald-600 mt-1 font-mono tabular-nums">{closedCount}</div>
-          <div className="text-[11px] text-emerald-700 mt-1">Horizontal check complete</div>
         </div>
       </div>
 
@@ -431,10 +389,10 @@ export default function SafetyObservationSubmodule({
               {/* Group Header Row matching spreadsheet colors */}
               <tr className="bg-emerald-100 text-emerald-950 border-b border-emerald-300 font-bold uppercase tracking-wider text-[11px]">
                 <th colSpan={9} className="px-3 py-2 border-r border-emerald-300 bg-[#dbe8cf]">
-                  Stage 1: Raised by Anyone in Organisation (Till Before Condition)
+                  Initiator Section (Till Before Condition)
                 </th>
                 <th colSpan={17} className="px-3 py-2 bg-[#d1e2c4]">
-                  Stage 2: Safety Coordinator Section (From Category Onward)
+                  Safety Coordinator Section (From Category Onward)
                 </th>
                 <th className="px-3 py-2 bg-[#c2d9b2] text-center">Action</th>
               </tr>
@@ -602,19 +560,21 @@ export default function SafetyObservationSubmodule({
                         <div className="flex items-center justify-center space-x-1.5">
                           <button
                             onClick={() => setViewDetailItem(obs)}
-                            className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded"
+                            className="p-1 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded cursor-pointer"
                             title="Inspect details"
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
-                          <button
-                            onClick={() => handleOpenCoordinatorModal(obs)}
-                            className="flex items-center space-x-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded font-semibold text-[11px]"
-                            title="Safety Coordinator Fill / Edit"
-                          >
-                            <Edit3 className="w-3 h-3 text-amber-700" />
-                            <span>Coordinator Action</span>
-                          </button>
+                          {isCoordinatorRole && (
+                            <button
+                              onClick={() => handleOpenCoordinatorModal(obs)}
+                              className="flex items-center space-x-1 px-2 py-1 bg-amber-50 hover:bg-amber-100 text-amber-800 border border-amber-200 rounded font-semibold text-[11px] cursor-pointer"
+                              title="Safety Coordinator Fill / Edit"
+                            >
+                              <Edit3 className="w-3 h-3 text-amber-700" />
+                              <span>Coordinator Action</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -626,16 +586,13 @@ export default function SafetyObservationSubmodule({
         </div>
       </div>
 
-      {/* MODAL 1: RAISE SAFETY OBSERVATION (Available to Anyone) */}
+      {/* MODAL 1: RAISE SAFETY OBSERVATION */}
       {isRaiseModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-xl w-full border border-slate-200 shadow-xl overflow-hidden my-8 animate-fade-in">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-slate-50">
               <div>
-                <span className="text-[10px] font-bold text-amber-700 uppercase tracking-widest font-mono">
-                  Stage 1: Organisation Initiation
-                </span>
-                <h3 className="text-base font-bold text-slate-900 mt-0.5">
+                <h3 className="text-base font-bold text-slate-900">
                   Raise Safety Observation
                 </h3>
               </div>
@@ -648,12 +605,6 @@ export default function SafetyObservationSubmodule({
             </div>
 
             <form onSubmit={handleRaiseSubmit} className="p-6 space-y-4">
-              <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-3 text-xs text-blue-900 flex items-start space-x-2">
-                <Info className="w-4 h-4 text-blue-600 shrink-0 mt-0.5" />
-                <span>
-                  Anyone in the organisation can submit an observation up to the <strong>Before condition</strong>. After submission, it will route to the <strong>Safety Coordinator</strong> for Category, 5-Why RCA, and Action assignment.
-                </span>
-              </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -798,7 +749,7 @@ export default function SafetyObservationSubmodule({
       )}
 
       {/* MODAL 2: SAFETY COORDINATOR ACTION (Category onward) */}
-      {coordinatorModalItem && (
+      {isCoordinatorRole && coordinatorModalItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-3xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-fade-in max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-amber-500/10">
@@ -838,6 +789,16 @@ export default function SafetyObservationSubmodule({
                 <h4 className="text-xs font-bold uppercase tracking-wider text-slate-900 font-mono border-b border-slate-100 pb-1">
                   1. Classification &amp; Immediate Corrective Action (ICA)
                 </h4>
+
+                {/* Embedded Interactive 5x5 Risk Assessment Matrix */}
+                <RiskAssessmentMatrix
+                  compact
+                  initialLikelihood={coordCategory === 'A' ? 4 : coordCategory === 'B' ? 3 : 2}
+                  initialSeverity={coordCategory === 'A' ? 4 : coordCategory === 'B' ? 3 : 2}
+                  onSelectPriority={(res) => {
+                    setCoordCategory(res.category);
+                  }}
+                />
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                   <div>

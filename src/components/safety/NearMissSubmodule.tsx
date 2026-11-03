@@ -215,9 +215,6 @@ export default function NearMissSubmodule({
             <h2 className="text-xl font-bold text-slate-900 mt-1">
               Near-miss Incident Report System
             </h2>
-            <p className="text-xs text-slate-600 mt-0.5 max-w-3xl">
-              <strong className="text-slate-800">Anyone</strong> in the organization can raise a near miss. It automatically routes to the <span className="font-semibold text-orange-800">Safety Coordinator</span> to conduct the <span className="font-semibold text-slate-800">Investigation*, Corrective Action, and Horizontal Deployment</span>.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
@@ -434,14 +431,16 @@ export default function NearMissSubmodule({
                           >
                             <Eye className="w-3.5 h-3.5" />
                           </button>
-                          <button
-                            onClick={() => handleOpenCoordinatorModal(nm)}
-                            className="flex items-center space-x-1 px-2 py-1 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded font-semibold text-[11px]"
-                            title="Fill Investigation & Actions"
-                          >
-                            <Edit3 className="w-3 h-3 text-orange-700" />
-                            <span>Coordinator</span>
-                          </button>
+                          {isCoordinatorRole && (
+                            <button
+                              onClick={() => handleOpenCoordinatorModal(nm)}
+                              className="flex items-center space-x-1 px-2 py-1 bg-orange-50 hover:bg-orange-100 text-orange-800 border border-orange-200 rounded font-semibold text-[11px]"
+                              title="Fill Investigation & Actions"
+                            >
+                              <Edit3 className="w-3 h-3 text-orange-700" />
+                              <span>Coordinator</span>
+                            </button>
+                          )}
                         </div>
                       </td>
                     </tr>
@@ -615,7 +614,7 @@ export default function NearMissSubmodule({
       )}
 
       {/* MODAL 2: SAFETY COORDINATOR ACTION (Investigation & CAPA) */}
-      {coordinatorModalItem && (
+      {isCoordinatorRole && coordinatorModalItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-2xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-fade-in">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-amber-100/50">

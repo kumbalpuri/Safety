@@ -1,6 +1,6 @@
 import React from 'react';
 import SafetyIncidents from '../components/SafetyIncidents';
-import { SafetyIncident } from '../types';
+import { SafetyIncident, UserPersona } from '../types';
 
 interface SafetyModuleProps {
   incidents: SafetyIncident[];
@@ -10,6 +10,8 @@ interface SafetyModuleProps {
   onClearInitialAction?: () => void;
   isSidebarHidden?: boolean;
   onToggleSidebar?: () => void;
+  persona?: UserPersona;
+  setPersona?: (p: UserPersona) => void;
 }
 
 export default function SafetyModule({
@@ -19,7 +21,9 @@ export default function SafetyModule({
   initialAction,
   onClearInitialAction,
   isSidebarHidden,
-  onToggleSidebar
+  onToggleSidebar,
+  persona,
+  setPersona
 }: SafetyModuleProps) {
   return (
     <SafetyIncidents
@@ -30,6 +34,8 @@ export default function SafetyModule({
       onClearInitialAction={onClearInitialAction}
       isSidebarHidden={isSidebarHidden}
       onToggleSidebar={onToggleSidebar}
+      persona={persona}
+      setPersona={setPersona}
     />
   );
 }

@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { SafetyIncident, SafetyObservation, NearMissReport, AccidentReport } from '../types';
+import { SafetyIncident, SafetyObservation, NearMissReport, AccidentReport, UserPersona } from '../types';
 import { 
   ShieldAlert, 
   Plus, 
@@ -26,7 +26,9 @@ import {
   ShieldCheck,
   Building,
   UserCheck,
-  ChevronLeft
+  ChevronLeft,
+  Target,
+  Lock
 } from 'lucide-react';
 import PresentationModeView, { SlideItem } from './common/PresentationModeView';
 import SafetyObservationSubmodule from './safety/SafetyObservationSubmodule';
@@ -37,6 +39,7 @@ import AccidentSubmodule from './safety/AccidentSubmodule';
 import AccidentDoctorForm from './safety/AccidentDoctorForm';
 import SafetyDashboardTab from './safety/SafetyDashboardTab';
 import IncidentTimeline from './safety/IncidentTimeline';
+import RiskAssessmentMatrix from './safety/RiskAssessmentMatrix';
 
 export type SafetyViewType = 
   | 'dashboard' 
@@ -47,7 +50,8 @@ export type SafetyViewType =
   | 'accidents' 
   | 'raise-accident' 
   | 'presentation'
-  | 'timeline';
+  | 'timeline'
+  | 'risk-matrix';
 
 interface SafetyIncidentsProps {
   incidents: SafetyIncident[];
@@ -57,6 +61,8 @@ interface SafetyIncidentsProps {
   onClearInitialAction?: () => void;
   isSidebarHidden?: boolean;
   onToggleSidebar?: () => void;
+  persona?: UserPersona;
+  setPersona?: (p: UserPersona) => void;
 }
 
 export default function SafetyIncidents({
@@ -66,22 +72,43 @@ export default function SafetyIncidents({
   initialAction,
   onClearInitialAction,
   isSidebarHidden,
-  onToggleSidebar
+  onToggleSidebar,
+  persona = 'coordinator',
+  setPersona
 }: SafetyIncidentsProps) {
-  // Navigation View is managed via left-hand sidebar submenu (No horizontal tabs on main screen)
   const [activeView, setActiveView] = useState<SafetyViewType>('dashboard');
-
-  // Submodule 1: Safety Observations State
   const [observations, setObservations] = useState<SafetyObservation[]>([]);
-  // Submodule 2: Near Miss State
   const [nearMisses, setNearMisses] = useState<NearMissReport[]>([]);
-  // Submodule 3: Accident Reports State
   const [accidents, setAccidents] = useState<AccidentReport[]>([]);
-
   const [isLoadingSubmodules, setIsLoadingSubmodules] = useState(true);
 
-  // Active Role Simulator (Helpful for testing workflows)
-  const [activeRole, setActiveRole] = useState<'anyone' | 'coordinator' | 'doctor'>('coordinator');
+  const deriveRoleFromPersona = (p?: UserPersona): 'anyone' | 'coordinator' | 'doctor' => {
+    if (p === 'operator') return 'anyone';
+    if (p === 'doctor') return 'doctor';
+    return 'coordinator';
+  };
+
+  const [activeRole, setActiveRole] = useState<'anyone' | 'coordinator' | 'doctor'>(() => deriveRoleFromPersona(persona));
+
+  useEffect(() => {
+    const mapped = deriveRoleFromPersona(persona);
+    setActiveRole(mapped);
+    if (mapped !== 'doctor' && activeView === 'raise-accident') {
+      setActiveView('accidents');
+    }
+  }, [persona]);
+
+  const handleSelectRole = (role: 'anyone' | 'coordinator' | 'doctor') => {
+    setActiveRole(role);
+    if (setPersona) {
+      if (role === 'anyone') setPersona('operator');
+      else if (role === 'doctor') setPersona('doctor');
+      else setPersona('coordinator');
+    }
+    if (role !== 'doctor' && activeView === 'raise-accident') {
+      setActiveView('accidents');
+    }
+  };
 
   // Fetch Submodules Data
   const fetchSafetySubmodules = async () => {
@@ -129,11 +156,17 @@ export default function SafetyIncidents({
     } else if (initialAction === 'accidents' || initialAction === 'investigation') {
       setActiveView('accidents');
     } else if (initialAction === 'raise-accident') {
-      setActiveView('raise-accident');
+      if (activeRole === 'doctor') {
+        setActiveView('raise-accident');
+      } else {
+        setActiveView('accidents');
+      }
     } else if (initialAction === 'presentation') {
       setActiveView('presentation');
     } else if (initialAction === 'timeline' || initialAction === 'incident-timeline') {
       setActiveView('timeline');
+    } else if (initialAction === 'risk-matrix') {
+      setActiveView('risk-matrix');
     }
 
     if (onClearInitialAction) onClearInitialAction();
@@ -396,53 +429,50 @@ export default function SafetyIncidents({
   const currentViewTitle = useMemo(() => {
     switch (activeView) {
       case 'dashboard':
-        return { title: 'Zero Harm Executive Dashboard', badge: 'EHS Safety Hub' };
+        return { title: 'Safety Dashboard', badge: 'Safety Desk' };
       case 'observations':
-        return { title: 'Submodule 1: Safety Observation Register', badge: 'Attachment 1 Format' };
+        return { title: 'Safety Observation Register', badge: 'Submodule 01' };
       case 'raise-observation':
-        return { title: 'Raise Safety Observation', badge: 'Initiator Form (Anyone)' };
+        return { title: 'Raise Safety Observation', badge: 'Submodule 01' };
       case 'nearmiss':
-        return { title: 'Submodule 2: Near Miss Register', badge: 'Attachment 2 Format' };
+        return { title: 'Near Miss Register', badge: 'Submodule 02' };
       case 'raise-nearmiss':
-        return { title: 'Raise Near Miss Incident', badge: 'Initiator Form (Anyone)' };
+        return { title: 'Raise Near Miss Incident', badge: 'Submodule 02' };
       case 'accidents':
-        return { title: 'Submodule 3: Accident Reports Register', badge: 'Attachment 3 Format' };
+        return { title: 'Accident Reports Register', badge: 'Submodule 03' };
       case 'raise-accident':
-        return { title: 'Raise Accident Report (Doctor)', badge: 'Medical Officer Portal' };
+        return { title: 'Raise Accident Report (Doctor Only)', badge: 'Submodule 03' };
       case 'presentation':
-        return { title: 'Presentation & Compliance Print', badge: 'Executive Board' };
+        return { title: 'Presentation & Print', badge: 'Safety Desk' };
       case 'timeline':
-        return { title: 'Incident Lifecycle Progression Stepper', badge: 'Vertical Stepper' };
+        return { title: 'Incident Timeline', badge: 'Safety Desk' };
+      case 'risk-matrix':
+        return { title: 'Risk Assessment Matrix', badge: '5×5 Matrix' };
       default:
-        return { title: 'Safety Desk', badge: 'EHS Module' };
+        return { title: 'Safety Desk', badge: 'EHS' };
     }
   }, [activeView]);
 
   return (
     <div className="space-y-6">
-      {/* Top Banner with Clean Context Bar (No horizontal main-screen tabs per user instruction) */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      {/* Top Bar */}
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div className="flex items-center space-x-3">
-          <div className="p-2.5 bg-amber-500/10 text-amber-600 rounded-xl">
-            <ShieldAlert className="w-6 h-6" />
+          <div className="p-2 bg-amber-500/10 text-amber-600 rounded-xl">
+            <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
-            <div className="flex items-center space-x-2">
-              <span className="text-[11px] font-bold text-amber-800 bg-amber-50 border border-amber-200 px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider">
-                {currentViewTitle.badge}
-              </span>
-              <span className="text-slate-400">·</span>
-              <span className="text-xs text-slate-500 font-mono">All submodules navigated via left sidebar</span>
-            </div>
-            <h1 className="text-xl font-bold text-slate-900 tracking-tight mt-0.5">
+            <span className="text-[10px] font-bold text-slate-500 font-mono uppercase tracking-wider">
+              {currentViewTitle.badge}
+            </span>
+            <h1 className="text-lg font-bold text-slate-900 tracking-tight">
               {currentViewTitle.title}
             </h1>
           </div>
         </div>
 
-        {/* Action Controls / Role Switcher Simulator */}
+        {/* Action Controls / Role Switcher */}
         <div className="flex flex-wrap items-center gap-2">
-          {/* Quick return button if currently in a Kaizen Form */}
           {(activeView === 'raise-observation' || activeView === 'raise-nearmiss' || activeView === 'raise-accident') && (
             <button
               onClick={() => {
@@ -457,7 +487,18 @@ export default function SafetyIncidents({
             </button>
           )}
 
-          {/* Quick toggle for Incident Timeline Stepper */}
+          <button
+            onClick={() => setActiveView(activeView === 'risk-matrix' ? 'dashboard' : 'risk-matrix')}
+            className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
+              activeView === 'risk-matrix'
+                ? 'bg-rose-600 text-white border-rose-500 shadow-xs'
+                : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
+            }`}
+          >
+            <Target className={`w-3.5 h-3.5 ${activeView === 'risk-matrix' ? 'text-white' : 'text-rose-600'}`} />
+            <span>Risk Matrix</span>
+          </button>
+
           <button
             onClick={() => setActiveView(activeView === 'timeline' ? 'dashboard' : 'timeline')}
             className={`flex items-center space-x-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition cursor-pointer border ${
@@ -465,46 +506,42 @@ export default function SafetyIncidents({
                 ? 'bg-amber-600 text-white border-amber-500 shadow-xs'
                 : 'bg-white hover:bg-slate-50 text-slate-700 border-slate-200'
             }`}
-            title="Inspect end-to-end incident stage progression"
           >
             <Clock className={`w-3.5 h-3.5 ${activeView === 'timeline' ? 'text-white' : 'text-amber-600'}`} />
-            <span>Incident Timeline</span>
+            <span>Timeline</span>
           </button>
 
-          {/* Role Simulator Buttons */}
+          {/* Role Switcher */}
           <div className="flex items-center bg-slate-100 p-1 rounded-xl text-xs border border-slate-200">
             <button
-              onClick={() => setActiveRole('anyone')}
+              onClick={() => handleSelectRole('anyone')}
               className={`px-3 py-1 rounded-lg font-semibold transition cursor-pointer ${
                 activeRole === 'anyone' ? 'bg-blue-600 text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
-              title="Initiator view (Anyone in organization can raise)"
             >
-              👤 Anyone
+              👷 Operator
             </button>
             <button
-              onClick={() => setActiveRole('coordinator')}
+              onClick={() => handleSelectRole('coordinator')}
               className={`px-3 py-1 rounded-lg font-semibold transition cursor-pointer ${
                 activeRole === 'coordinator' ? 'bg-amber-500 text-slate-950 font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
-              title="Safety Coordinator view (Fills balance data & 5-Why)"
             >
               🛡️ Coordinator
             </button>
             <button
-              onClick={() => setActiveRole('doctor')}
+              onClick={() => handleSelectRole('doctor')}
               className={`px-3 py-1 rounded-lg font-semibold transition cursor-pointer ${
                 activeRole === 'doctor' ? 'bg-rose-600 text-white font-bold shadow-xs' : 'text-slate-600 hover:text-slate-900'
               }`}
-              title="Doctor / Medical Officer view (Raises accident reports)"
             >
-              🩺 Doctor (OHC)
+              🩺 Doctor
             </button>
           </div>
         </div>
       </div>
 
-      {/* VIEW 1: ZERO HARM LIVE DASHBOARD */}
+      {/* VIEW 1: DASHBOARD */}
       {activeView === 'dashboard' && (
         <SafetyDashboardTab
           observations={observations}
@@ -515,12 +552,13 @@ export default function SafetyIncidents({
             else if (tab === 'nearmiss') setActiveView('nearmiss');
             else if (tab === 'accidents') setActiveView('accidents');
             else if (tab === 'timeline') setActiveView('timeline');
+            else if (tab === 'risk-matrix') setActiveView('risk-matrix');
             else if (tab === 'dashboard') setActiveView('dashboard');
           }}
         />
       )}
 
-      {/* VIEW 2: SUBMODULE 1 - SAFETY OBSERVATIONS REGISTER (Attachment 1) */}
+      {/* VIEW 2: SUBMODULE 1 - SAFETY OBSERVATIONS REGISTER */}
       {activeView === 'observations' && (
         <SafetyObservationSubmodule
           observations={observations}
@@ -531,7 +569,7 @@ export default function SafetyIncidents({
         />
       )}
 
-      {/* VIEW 3: SUBMODULE 1 - RAISE SAFETY OBSERVATION FORM (Kaizen Look & Feel + Before & After Photos) */}
+      {/* VIEW 3: SUBMODULE 1 - RAISE SAFETY OBSERVATION FORM */}
       {activeView === 'raise-observation' && (
         <SafetyObservationForm
           onAddObservation={handleAddObservation}
@@ -540,7 +578,7 @@ export default function SafetyIncidents({
         />
       )}
 
-      {/* VIEW 4: SUBMODULE 2 - NEAR MISS REGISTER (Attachment 2) */}
+      {/* VIEW 4: SUBMODULE 2 - NEAR MISS REGISTER */}
       {activeView === 'nearmiss' && (
         <NearMissSubmodule
           nearMisses={nearMisses}
@@ -551,7 +589,7 @@ export default function SafetyIncidents({
         />
       )}
 
-      {/* VIEW 5: SUBMODULE 2 - RAISE NEAR MISS FORM (Kaizen Look & Feel + Before & After Photos) */}
+      {/* VIEW 5: SUBMODULE 2 - RAISE NEAR MISS FORM */}
       {activeView === 'raise-nearmiss' && (
         <NearMissForm
           onAddNearMiss={handleAddNearMiss}
@@ -560,24 +598,54 @@ export default function SafetyIncidents({
         />
       )}
 
-      {/* VIEW 6: SUBMODULE 3 - ACCIDENT REPORTS REGISTER (Attachment 3) */}
+      {/* VIEW 6: SUBMODULE 3 - ACCIDENT REPORTS REGISTER */}
       {activeView === 'accidents' && (
         <AccidentSubmodule
           accidents={accidents}
           onAddAccident={handleAddAccident}
           onUpdateAccident={handleUpdateAccident}
           isCoordinatorRole={activeRole === 'coordinator'}
-          onNavigateRaise={() => setActiveView('raise-accident')}
+          isDoctorRole={activeRole === 'doctor'}
+          onNavigateRaise={() => {
+            if (activeRole === 'doctor') {
+              setActiveView('raise-accident');
+            }
+          }}
         />
       )}
 
-      {/* VIEW 7: SUBMODULE 3 - RAISE DOCTOR ACCIDENT REPORT FORM (Kaizen Look & Feel + Before & After Photos) */}
+      {/* VIEW 7: SUBMODULE 3 - RAISE DOCTOR ACCIDENT REPORT FORM (STRICTLY DOCTOR ONLY) */}
       {activeView === 'raise-accident' && (
-        <AccidentDoctorForm
-          onAddAccident={handleAddAccident}
-          onCancel={() => setActiveView('accidents')}
-          onSuccess={() => setActiveView('accidents')}
-        />
+        activeRole === 'doctor' ? (
+          <AccidentDoctorForm
+            onAddAccident={handleAddAccident}
+            onCancel={() => setActiveView('accidents')}
+            onSuccess={() => setActiveView('accidents')}
+          />
+        ) : (
+          <div className="bg-white border border-rose-200 rounded-2xl p-8 text-center max-w-lg mx-auto my-8 space-y-4 shadow-xs">
+            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mx-auto">
+              <Lock className="w-6 h-6" />
+            </div>
+            <h3 className="text-base font-bold text-slate-900">
+              Restricted to Medical Officer (Doctor)
+            </h3>
+            <div className="flex items-center justify-center gap-3 pt-2">
+              <button
+                onClick={() => setActiveView('accidents')}
+                className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Back to Register
+              </button>
+              <button
+                onClick={() => handleSelectRole('doctor')}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition cursor-pointer"
+              >
+                Switch to Doctor Role
+              </button>
+            </div>
+          </div>
+        )
       )}
 
       {/* VIEW 8: PRESENTATION MODE */}
@@ -590,13 +658,29 @@ export default function SafetyIncidents({
         />
       )}
 
-      {/* VIEW 9: INCIDENT PROGRESSION TIMELINE (Vertical Stepper) */}
+      {/* VIEW 9: INCIDENT PROGRESSION TIMELINE */}
       {activeView === 'timeline' && (
         <IncidentTimeline
           observations={observations}
           nearMisses={nearMisses}
           accidents={accidents}
           incidents={incidents}
+          isCoordinatorRole={activeRole === 'coordinator'}
+        />
+      )}
+
+      {/* VIEW 10: INTERACTIVE RISK ASSESSMENT MATRIX */}
+      {activeView === 'risk-matrix' && (
+        <RiskAssessmentMatrix
+          observations={observations}
+          nearMisses={nearMisses}
+          accidents={accidents}
+          incidents={incidents}
+          onUpdateObservation={handleUpdateObservation}
+          onUpdateNearMiss={handleUpdateNearMiss}
+          onUpdateAccident={handleUpdateAccident}
+          onUpdateIncident={onUpdateIncident}
+          isCoordinatorRole={activeRole === 'coordinator'}
         />
       )}
     </div>

@@ -19,12 +19,14 @@ import {
   UserCheck
 } from 'lucide-react';
 import AccidentReportPrintView from './AccidentReportPrintView';
+import AccidentFishboneDiagram, { IshikawaCausesData } from './AccidentFishboneDiagram';
 
 interface AccidentSubmoduleProps {
   accidents: AccidentReport[];
   onAddAccident: (data: Partial<AccidentReport>) => Promise<void>;
   onUpdateAccident: (id: string, data: Partial<AccidentReport>) => Promise<void>;
   isCoordinatorRole?: boolean;
+  isDoctorRole?: boolean;
   onNavigateRaise?: () => void;
 }
 
@@ -32,7 +34,8 @@ export default function AccidentSubmodule({
   accidents,
   onAddAccident,
   onUpdateAccident,
-  isCoordinatorRole = true,
+  isCoordinatorRole = false,
+  isDoctorRole = false,
   onNavigateRaise
 }: AccidentSubmoduleProps) {
   // Search & Filter
@@ -138,6 +141,15 @@ export default function AccidentSubmodule({
   // Toggle fishbone checkboxes
   const toggleFishboneItem = (setter: React.Dispatch<React.SetStateAction<string[]>>, item: string) => {
     setter(prev => prev.includes(item) ? prev.filter(i => i !== item) : [...prev, item]);
+  };
+
+  const handleToggleFishboneCategory = (category: keyof IshikawaCausesData, item: string) => {
+    if (category === 'ppe') toggleFishboneItem(setCoordPpeCauses, item);
+    else if (category === 'environmental') toggleFishboneItem(setCoordEnvCauses, item);
+    else if (category === 'machineEquipment') toggleFishboneItem(setCoordMachCauses, item);
+    else if (category === 'injuredPerson') toggleFishboneItem(setCoordInjuredCauses, item);
+    else if (category === 'management') toggleFishboneItem(setCoordMgmtCauses, item);
+    else if (category === 'jobProcedure') toggleFishboneItem(setCoordJobProcCauses, item);
   };
 
   // Open Coordinator Modal
@@ -345,19 +357,23 @@ export default function AccidentSubmodule({
             <h2 className="text-xl font-bold text-slate-900 mt-1">
               Accident Reporting &amp; 5-Why Investigation
             </h2>
-            <p className="text-xs text-slate-600 mt-0.5 max-w-3xl">
-              <strong className="text-slate-800">Doctor / Medical Officer</strong> fills the Accident &amp; Medical Officer Assessment section (within 8 hours). Then the request routes to the <strong className="text-rose-800">Safety Coordinator</strong> to conduct the Fishbone Ishikawa audit, <span className="font-semibold text-rose-800">5-Why Analysis ("Describe the Causes - What went wrong?")</span>, and Corrective Actions.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-3">
-            <button
-              onClick={() => onNavigateRaise ? onNavigateRaise() : setIsDoctorRaiseModalOpen(true)}
-              className="flex items-center space-x-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
-            >
-              <Stethoscope className="w-4 h-4" />
-              <span>Raise Accident Report (Doctor)</span>
-            </button>
+            {isDoctorRole ? (
+              <button
+                onClick={() => onNavigateRaise ? onNavigateRaise() : setIsDoctorRaiseModalOpen(true)}
+                className="flex items-center space-x-2 px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer"
+              >
+                <Stethoscope className="w-4 h-4" />
+                <span>Raise Accident Report (Doctor)</span>
+              </button>
+            ) : (
+              <span className="px-3 py-1.5 bg-slate-100 text-slate-600 border border-slate-200 rounded-xl text-xs font-mono font-semibold flex items-center space-x-1.5">
+                <Stethoscope className="w-3.5 h-3.5 text-rose-600" />
+                <span>Doctor (OHC) Role Only to Raise</span>
+              </span>
+            )}
           </div>
         </div>
       </div>
@@ -408,13 +424,15 @@ export default function AccidentSubmodule({
                     <span>View Official 2-Page Form</span>
                   </button>
 
-                  <button
-                    onClick={() => handleOpenCoordinatorModal(acc)}
-                    className="flex items-center space-x-1 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg text-xs font-bold transition"
-                  >
-                    <Edit3 className="w-3.5 h-3.5 text-rose-700" />
-                    <span>Coordinator Investigation &amp; 5-Why</span>
-                  </button>
+                  {isCoordinatorRole && (
+                    <button
+                      onClick={() => handleOpenCoordinatorModal(acc)}
+                      className="flex items-center space-x-1 px-3 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-800 border border-rose-200 rounded-lg text-xs font-bold transition"
+                    >
+                      <Edit3 className="w-3.5 h-3.5 text-rose-700" />
+                      <span>Coordinator Investigation &amp; 5-Why</span>
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -462,6 +480,14 @@ export default function AccidentSubmodule({
                 </div>
               </div>
 
+              {/* Visual Fishbone Diagram Output directly on Accident Card */}
+              <div className="pt-4 mt-4 border-t border-slate-100">
+                <AccidentFishboneDiagram
+                  causes={acc.ishikawaCauses}
+                  problemTitle={acc.briefDescription || acc.natureOfInjury}
+                />
+              </div>
+
               {/* Visual Proof Photos */}
               {(acc.photoBefore || acc.photoAfter) && (
                 <div className="pt-3 border-t border-slate-100 grid grid-cols-2 gap-3">
@@ -489,7 +515,7 @@ export default function AccidentSubmodule({
       </div>
 
       {/* MODAL 1: RAISE ACCIDENT REPORT (Doctor / Medical Officer Form) */}
-      {isDoctorRaiseModalOpen && (
+      {isDoctorRole && isDoctorRaiseModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-3xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-fade-in max-h-[92vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-rose-50">
@@ -814,7 +840,7 @@ export default function AccidentSubmodule({
       )}
 
       {/* MODAL 2: SAFETY COORDINATOR SECTION (Page 2: Ishikawa & 5-Why Analysis) */}
-      {coordinatorModalItem && (
+      {isCoordinatorRole && coordinatorModalItem && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-xs p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl max-w-4xl w-full border border-slate-200 shadow-2xl overflow-hidden my-8 animate-fade-in max-h-[94vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 bg-amber-50">
@@ -848,85 +874,24 @@ export default function AccidentSubmodule({
                 </div>
               </div>
 
-              {/* 1. Fishbone Causes Selection */}
-              <div className="space-y-3">
+              {/* 1. Interactive Visual Fishbone Diagram Selection */}
+              <div className="space-y-2">
                 <h4 className="font-bold uppercase tracking-wider text-slate-900 font-mono border-b border-slate-100 pb-1">
-                  1. Cause(s) of the Incident (Ishikawa Fishbone Categories)
+                  1. Cause(s) of the Incident — Interactive Fishbone Diagram (Click circle to blacken)
                 </h4>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {/* PPE */}
-                  <div className="border border-slate-200 rounded-xl p-3 space-y-2 bg-slate-50/50">
-                    <div className="font-bold text-slate-900 text-xs">Personal Protective Equipment</div>
-                    <div className="space-y-1">
-                      {['PPE not available', 'PPE not specified', 'Improper use of PPE', 'PPE not in good condition', 'Operator not wear handgloves'].map(item => (
-                        <label key={item} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={coordPpeCauses.includes(item)}
-                            onChange={() => toggleFishboneItem(setCoordPpeCauses, item)}
-                            className="rounded text-rose-600 focus:ring-rose-500"
-                          />
-                          <span>{item}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Environmental */}
-                  <div className="border border-slate-200 rounded-xl p-3 space-y-2 bg-slate-50/50">
-                    <div className="font-bold text-slate-900 text-xs">Environmental Conditions</div>
-                    <div className="space-y-1">
-                      {['Floor/Aisle not in good condition', 'Inadequate work space', 'Noise level was high', 'Poor Illumination', 'Location was Dusty / Smoky'].map(item => (
-                        <label key={item} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={coordEnvCauses.includes(item)}
-                            onChange={() => toggleFishboneItem(setCoordEnvCauses, item)}
-                            className="rounded text-rose-600 focus:ring-rose-500"
-                          />
-                          <span>{item}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Machine & Material */}
-                  <div className="border border-slate-200 rounded-xl p-3 space-y-2 bg-slate-50/50">
-                    <div className="font-bold text-slate-900 text-xs">Machine &amp; Equipment / Raw Material</div>
-                    <div className="space-y-1">
-                      {['Defective Machine / Equipment', 'Inspection Procedure was not followed', 'Faulty machine design', 'Unusable Machine', 'Sharp edge/oily/odd size material', 'Chemical (corrosive / toxic / flammable)'].map(item => (
-                        <label key={item} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={coordMachCauses.includes(item)}
-                            onChange={() => toggleFishboneItem(setCoordMachCauses, item)}
-                            className="rounded text-rose-600 focus:ring-rose-500"
-                          />
-                          <span>{item}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Injured Person */}
-                  <div className="border border-slate-200 rounded-xl p-3 space-y-2 bg-slate-50/50">
-                    <div className="font-bold text-slate-900 text-xs">Injured Person</div>
-                    <div className="space-y-1">
-                      {['Failure to follow SOP', 'Inadequate job experience', 'Inadequate training', 'Physically unsuitable', 'Employee under stress', 'Improper body posture', 'Operator Negligence'].map(item => (
-                        <label key={item} className="flex items-center space-x-2 cursor-pointer">
-                          <input
-                            type="checkbox"
-                            checked={coordInjuredCauses.includes(item)}
-                            onChange={() => toggleFishboneItem(setCoordInjuredCauses, item)}
-                            className="rounded text-rose-600 focus:ring-rose-500"
-                          />
-                          <span>{item}</span>
-                        </label>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+                <AccidentFishboneDiagram
+                  interactive
+                  problemTitle={coordinatorModalItem.briefDescription || coordinatorModalItem.natureOfInjury}
+                  causes={{
+                    ppe: coordPpeCauses,
+                    environmental: coordEnvCauses,
+                    machineEquipment: coordMachCauses,
+                    injuredPerson: coordInjuredCauses,
+                    management: coordMgmtCauses,
+                    jobProcedure: coordJobProcCauses
+                  }}
+                  onToggleCause={handleToggleFishboneCategory}
+                />
               </div>
 
               {/* USER MANDATE: "Add 5 Why analysis in Describe the Causes (What went wrong?)" */}

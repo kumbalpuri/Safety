@@ -388,13 +388,15 @@ export default function Sidebar({
                   <Stethoscope className="w-3 h-3 shrink-0 text-rose-400" />
                   <span>4. 🚑 Accident Reports</span>
                 </button>
-                <button
-                  onClick={() => selectSubTab('safety', 'raise-accident', 'raise-accident')}
-                  className="w-full flex items-center space-x-2 px-2.5 py-1 rounded-lg text-left text-[10px] font-medium text-rose-300/80 hover:text-rose-100 hover:bg-slate-900/30 pl-5 cursor-pointer"
-                >
-                  <PlusCircle className="w-2.5 h-2.5 shrink-0 text-rose-400" />
-                  <span>🩺 Raise Report (Doctor)</span>
-                </button>
+                {persona === 'doctor' && (
+                  <button
+                    onClick={() => selectSubTab('safety', 'raise-accident', 'raise-accident')}
+                    className="w-full flex items-center space-x-2 px-2.5 py-1 rounded-lg text-left text-[10px] font-medium text-rose-300/80 hover:text-rose-100 hover:bg-slate-900/30 pl-5 cursor-pointer"
+                  >
+                    <PlusCircle className="w-2.5 h-2.5 shrink-0 text-rose-400" />
+                    <span>🩺 Raise Report (Doctor)</span>
+                  </button>
+                )}
                 <button
                   onClick={() => selectSubTab('safety', 'presentation', 'presentation')}
                   className="w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-left text-[11px] font-semibold text-indigo-400 hover:text-indigo-300 hover:bg-slate-900/30 cursor-pointer"
@@ -408,6 +410,13 @@ export default function Sidebar({
                 >
                   <Clock className="w-3 h-3 shrink-0 text-amber-400" />
                   <span>6. ⏱️ Incident Timeline Stepper</span>
+                </button>
+                <button
+                  onClick={() => selectSubTab('safety', 'risk-matrix', 'risk-matrix')}
+                  className="w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg text-left text-[11px] font-semibold text-rose-400 hover:text-rose-200 hover:bg-slate-900/30 cursor-pointer"
+                >
+                  <ShieldAlert className="w-3 h-3 shrink-0 text-rose-400" />
+                  <span>7. 🎯 Risk Assessment Matrix</span>
                 </button>
               </div>
             )}
@@ -656,29 +665,53 @@ export default function Sidebar({
 
         </div>
 
-        {/* Persona quick switch panel at sidebar bottom (Very Enterprise!) */}
+        {/* Persona quick switch panel at sidebar bottom */}
         {isExpanded && (
           <div className="p-3 border-t border-slate-800/80 bg-slate-950 shrink-0">
             <span className="block text-[9px] font-black uppercase text-slate-500 tracking-wider mb-2 font-mono">
-              ⚡ WORKSPACE PERSONA
+              ⚡ ACTIVE ROLE
             </span>
             <div className="grid grid-cols-1 gap-1 text-[11px]">
               <button
                 type="button"
                 onClick={() => setPersona('operator')}
-                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition ${
+                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition cursor-pointer ${
                   persona === 'operator'
                     ? 'bg-emerald-500 text-slate-950 font-bold'
                     : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
                 }`}
               >
                 <span>👷</span>
-                <span className="truncate">Operator Console</span>
+                <span className="truncate">Operator</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPersona('coordinator')}
+                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition cursor-pointer ${
+                  persona === 'coordinator'
+                    ? 'bg-amber-500 text-slate-950 font-bold'
+                    : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                }`}
+              >
+                <span>🛡️</span>
+                <span className="truncate">Safety Coordinator</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setPersona('doctor')}
+                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition cursor-pointer ${
+                  persona === 'doctor'
+                    ? 'bg-rose-600 text-white font-bold'
+                    : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
+                }`}
+              >
+                <span>🩺</span>
+                <span className="truncate">Doctor (OHC)</span>
               </button>
               <button
                 type="button"
                 onClick={() => setPersona('committee')}
-                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition ${
+                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition cursor-pointer ${
                   persona === 'committee'
                     ? 'bg-indigo-500 text-slate-950 font-bold'
                     : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
@@ -690,7 +723,7 @@ export default function Sidebar({
               <button
                 type="button"
                 onClick={() => setPersona('manager')}
-                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition ${
+                className={`w-full flex items-center space-x-2 px-2.5 py-1.5 rounded-lg transition cursor-pointer ${
                   persona === 'manager'
                     ? 'bg-blue-500 text-slate-950 font-bold'
                     : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'

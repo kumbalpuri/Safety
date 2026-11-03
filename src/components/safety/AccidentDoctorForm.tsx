@@ -259,9 +259,6 @@ export default function AccidentDoctorForm({ onAddAccident, onCancel, onSuccess 
           <h2 className="text-lg font-bold text-white tracking-wide mt-1 flex items-center space-x-2">
             <span>KSPG / EHS ACCIDENT REPORT (Page 01 of 02)</span>
           </h2>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
-            Filled by Doctor / Medical Officer within 08 hrs • Attachment 3 Format • Routes to Safety Coordinator for 5-Why RCA
-          </p>
         </div>
         
         {/* Test Preset Buttons */}
@@ -296,13 +293,7 @@ export default function AccidentDoctorForm({ onAddAccident, onCancel, onSuccess 
           </div>
         )}
 
-        {/* Workflow Banner explaining rule */}
-        <div className="bg-rose-50/70 border border-rose-200 rounded-xl p-3.5 flex items-start space-x-3">
-          <Stethoscope className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-          <div className="text-xs text-rose-900 leading-relaxed">
-            <span className="font-bold">Standard Operating Procedure:</span> This accident report is raised by the <strong>Doctor / Medical Officer</strong> at the Plant Occupational Health Center (OHC). Once submitted, it automatically routes to the <strong>Safety Coordinator</strong> to conduct the formal <strong>5-Why Analysis</strong> in "Describe the Causes (What went wrong?)", identify contributing Unsafe Conditions &amp; Acts (Page 02), and log Corrective Action(s).
-          </div>
-        </div>
+
 
         {/* SECTION 1: INCIDENT METADATA */}
         <div className="bg-slate-50 border border-slate-200 rounded-xl p-4 space-y-4">
@@ -638,9 +629,6 @@ export default function AccidentDoctorForm({ onAddAccident, onCancel, onSuccess 
                 <span>📸 BEFORE &amp; AFTER VISUAL PROOF DOCUMENTATION</span>
                 <span className="text-red-500 font-bold text-sm">*</span>
               </h3>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                Upload or capture photos to verify both initial injury/site condition and clinical treatment provided.
-              </p>
             </div>
             <span className="text-[10px] font-bold text-red-700 bg-red-100 border border-red-200 px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider shrink-0">
               Compulsory Photos Required

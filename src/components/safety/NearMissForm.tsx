@@ -161,9 +161,6 @@ export default function NearMissForm({ onAddNearMiss, onCancel, onSuccess }: Nea
           <h2 className="text-lg font-bold text-white tracking-wide mt-1 flex items-center space-x-2">
             <span>NEAR-MISS INCIDENT REPORT SHEET</span>
           </h2>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
-            Log Near-Miss Close Calls Before Injuries Occur • Attachment 2 Format • Routes to Safety Coordinator
-          </p>
         </div>
         
         {/* Test Preset Buttons */}
@@ -198,13 +195,7 @@ export default function NearMissForm({ onAddNearMiss, onCancel, onSuccess }: Nea
           </div>
         )}
 
-        {/* Workflow Banner explaining rule */}
-        <div className="bg-orange-50/70 border border-orange-200 rounded-xl p-3.5 flex items-start space-x-3">
-          <ShieldAlert className="w-5 h-5 text-orange-600 shrink-0 mt-0.5" />
-          <div className="text-xs text-orange-900 leading-relaxed">
-            <span className="font-bold">Standard Operating Procedure:</span> Anyone can report a Near-Miss incident (Attachment 2 Section 1). After submission, it will route to the <strong>Safety Coordinator</strong> who is responsible for conducting the root cause <strong>Investigation* (Cause of Incident)</strong>, defining the <strong>Corrective Action Recommended</strong> with Target Date &amp; Responsibility, and identifying <strong>Horizontal Deployment</strong> across lines.
-          </div>
-        </div>
+
 
         {/* Metadata Grid (4-Column Layout) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
@@ -366,9 +357,6 @@ export default function NearMissForm({ onAddNearMiss, onCancel, onSuccess }: Nea
                 <span>📸 BEFORE &amp; AFTER VISUAL PROOF DOCUMENTATION</span>
                 <span className="text-red-500 font-bold text-sm">*</span>
               </h3>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                Compulsory visual proof for incident context and subsequent workplace containment.
-              </p>
             </div>
             <span className="text-[10px] font-bold text-red-700 bg-red-100 border border-red-200 px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider shrink-0">
               Compulsory Photos Required

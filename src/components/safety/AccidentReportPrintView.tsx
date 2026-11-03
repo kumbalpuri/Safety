@@ -1,6 +1,7 @@
 import React from 'react';
 import { AccidentReport } from '../../types';
 import { Printer, X, Download } from 'lucide-react';
+import AccidentFishboneDiagram from './AccidentFishboneDiagram';
 
 interface AccidentReportPrintViewProps {
   report: AccidentReport;
@@ -274,172 +275,11 @@ export default function AccidentReportPrintView({ report, onClose }: AccidentRep
               <span>Date: {report.investigationDate || '12 / 01 / 2025'}</span>
             </div>
 
-            {/* Fishbone / Cause (s) of the Incident */}
-            <div className="border border-black p-2.5 space-y-2">
-              <div className="text-[10px] font-bold text-center uppercase tracking-wider bg-slate-200 py-0.5 border border-black">
-                CAUSE (S) OF THE INCIDENT [blackened circle represents identified Cause(s)]
-              </div>
-
-              {/* 6 Category Fishbone Grid */}
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-[10px] pt-1">
-                {/* 1. PPE */}
-                <div className="border border-black p-2 space-y-1">
-                  <div className="bg-black text-white px-1.5 py-0.5 font-bold uppercase tracking-wider text-[9px]">
-                    Personal Protective Equipment
-                  </div>
-                  <div className="space-y-0.5 pt-1">
-                    {[
-                      'PPE not available',
-                      'PPE not specified',
-                      'Improper use of PPE',
-                      'PPE not in good condition',
-                      'Operator not wear handgloves'
-                    ].map((item, idx) => {
-                      const checked = isIshikawaChecked('ppe', item);
-                      return (
-                        <div key={idx} className="flex items-center space-x-1.5">
-                          <span className={`w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center font-bold text-[8px] ${checked ? 'bg-black text-white' : ''}`}>
-                            {checked ? '●' : '○'}
-                          </span>
-                          <span className={checked ? 'font-bold' : ''}>{item}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 2. Environmental */}
-                <div className="border border-black p-2 space-y-1">
-                  <div className="bg-black text-white px-1.5 py-0.5 font-bold uppercase tracking-wider text-[9px]">
-                    Environmental Conditions
-                  </div>
-                  <div className="space-y-0.5 pt-1">
-                    {[
-                      'Floor/Aisle not in good condition',
-                      'Inadequate work space',
-                      'Noise level was high',
-                      'Poor Illumination',
-                      'Location was Dusty / Smoky'
-                    ].map((item, idx) => {
-                      const checked = isIshikawaChecked('environmental', item);
-                      return (
-                        <div key={idx} className="flex items-center space-x-1.5">
-                          <span className={`w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center font-bold text-[8px] ${checked ? 'bg-black text-white' : ''}`}>
-                            {checked ? '●' : '○'}
-                          </span>
-                          <span className={checked ? 'font-bold' : ''}>{item}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 3. Machine & Raw Material */}
-                <div className="border border-black p-2 space-y-1">
-                  <div className="bg-black text-white px-1.5 py-0.5 font-bold uppercase tracking-wider text-[9px]">
-                    Machine &amp; Equipment / Raw Material
-                  </div>
-                  <div className="space-y-0.5 pt-1">
-                    {[
-                      'Defective Machine / Equipment',
-                      'Inspection Procedure was not followed',
-                      'Faulty machine design',
-                      'Unusable Machine',
-                      'Sharp edge/oily/odd size material',
-                      'Chemical (corrosive / toxic / flammable)'
-                    ].map((item, idx) => {
-                      const checked = isIshikawaChecked('machineEquipment', item);
-                      return (
-                        <div key={idx} className="flex items-center space-x-1.5">
-                          <span className={`w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center font-bold text-[8px] ${checked ? 'bg-black text-white' : ''}`}>
-                            {checked ? '●' : '○'}
-                          </span>
-                          <span className={checked ? 'font-bold' : ''}>{item}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 4. Injured Person */}
-                <div className="border border-black p-2 space-y-1">
-                  <div className="bg-black text-white px-1.5 py-0.5 font-bold uppercase tracking-wider text-[9px]">
-                    Injured Person
-                  </div>
-                  <div className="space-y-0.5 pt-1">
-                    {[
-                      'Failure to follow SOP',
-                      'Inadequate job experience',
-                      'Inadequate training',
-                      'Physically unsuitable',
-                      'Employee under stress',
-                      'Improper body posture',
-                      'Operator Negligence'
-                    ].map((item, idx) => {
-                      const checked = isIshikawaChecked('injuredPerson', item);
-                      return (
-                        <div key={idx} className="flex items-center space-x-1.5">
-                          <span className={`w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center font-bold text-[8px] ${checked ? 'bg-black text-white' : ''}`}>
-                            {checked ? '●' : '○'}
-                          </span>
-                          <span className={checked ? 'font-bold' : ''}>{item}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 5. Management */}
-                <div className="border border-black p-2 space-y-1">
-                  <div className="bg-black text-white px-1.5 py-0.5 font-bold uppercase tracking-wider text-[9px]">
-                    Management
-                  </div>
-                  <div className="space-y-0.5 pt-1">
-                    {[
-                      'Failure to detect/report unsafe act/condition',
-                      'Failure to correct Unsafe condition',
-                      'Lack of training to Supervisor',
-                      'Hazards/SOP not communicated to employee',
-                      'Lack of supervision'
-                    ].map((item, idx) => {
-                      const checked = isIshikawaChecked('management', item);
-                      return (
-                        <div key={idx} className="flex items-center space-x-1.5">
-                          <span className={`w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center font-bold text-[8px] ${checked ? 'bg-black text-white' : ''}`}>
-                            {checked ? '●' : '○'}
-                          </span>
-                          <span className={checked ? 'font-bold' : ''}>{item}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* 6. Job Procedure */}
-                <div className="border border-black p-2 space-y-1">
-                  <div className="bg-black text-white px-1.5 py-0.5 font-bold uppercase tracking-wider text-[9px]">
-                    Job Procedure
-                  </div>
-                  <div className="space-y-0.5 pt-1">
-                    {[
-                      'SOP not prepared',
-                      'SOP did not cover Unsafe act or condition',
-                      'Wrong substitute used (make shift arrangement)'
-                    ].map((item, idx) => {
-                      const checked = isIshikawaChecked('jobProcedure', item);
-                      return (
-                        <div key={idx} className="flex items-center space-x-1.5">
-                          <span className={`w-3.5 h-3.5 rounded-full border border-black flex items-center justify-center font-bold text-[8px] ${checked ? 'bg-black text-white' : ''}`}>
-                            {checked ? '●' : '○'}
-                          </span>
-                          <span className={checked ? 'font-bold' : ''}>{item}</span>
-                        </div>
-                      );
-                    })}
-                  </div>
-                </div>
-              </div>
-            </div>
+            {/* Visual Fishbone Diagram / Cause(s) of the Incident */}
+            <AccidentFishboneDiagram
+              causes={report.ishikawaCauses}
+              problemTitle={report.briefDescription || report.natureOfInjury}
+            />
 
             {/* User Requested: "Describe the Causes (What went wrong?) with 5 Why analysis" */}
             <div className="border-2 border-black">

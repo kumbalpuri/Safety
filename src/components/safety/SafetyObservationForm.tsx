@@ -148,28 +148,20 @@ export default function SafetyObservationForm({ onAddObservation, onCancel, onSu
   return (
     <div className="bg-white border border-slate-200 rounded-2xl shadow-sm overflow-hidden max-w-5xl mx-auto my-6">
       
-      {/* Title Header (Kaizen Look & Feel) */}
+      {/* Title Header */}
       <div className="bg-slate-900 px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-800 gap-3">
         <div>
-          <div className="flex items-center space-x-2">
-            <span className="text-[10px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/30 px-2 py-0.5 rounded-full font-mono uppercase tracking-wider">
-              Submodule 1: Initiator Portal
-            </span>
-            <span className="text-[10px] font-bold bg-blue-500/20 text-blue-300 border border-blue-500/30 px-2 py-0.5 rounded-full font-mono uppercase tracking-wider">
-              Anyone in Organisation
-            </span>
-          </div>
-          <h2 className="text-lg font-bold text-white tracking-wide mt-1 flex items-center space-x-2">
-            <span>SAFETY OBSERVATION SHEET</span>
+          <span className="text-[10px] font-bold text-amber-400 font-mono uppercase tracking-wider">
+            Submodule 01
+          </span>
+          <h2 className="text-lg font-bold text-white tracking-wide">
+            SAFETY OBSERVATION SHEET
           </h2>
-          <p className="text-xs text-slate-400 font-mono mt-0.5">
-            Log Unsafe Conditions &amp; Unsafe Acts before work begins • Escalated to Safety Coordinator
-          </p>
         </div>
         
-        {/* Test Preset Buttons */}
+        {/* Preset Buttons */}
         <div className="flex items-center space-x-2">
-          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Demo Presets:</span>
+          <span className="text-[10px] font-bold text-slate-400 uppercase tracking-wider font-mono">Presets:</span>
           <button
             type="button"
             onClick={() => loadPreset('water')}
@@ -198,14 +190,6 @@ export default function SafetyObservationForm({ onAddObservation, onCancel, onSu
             </button>
           </div>
         )}
-
-        {/* Workflow Banner explaining rule */}
-        <div className="bg-amber-50/60 border border-amber-200/80 rounded-xl p-3.5 flex items-start space-x-3">
-          <AlertTriangle className="w-5 h-5 text-amber-600 shrink-0 mt-0.5" />
-          <div className="text-xs text-amber-900 leading-relaxed">
-            <span className="font-bold">Standard Operating Procedure:</span> As per company EHS policy, anyone in the organisation can raise a Safety Observation up to the <strong>Before Condition</strong>. Once submitted, it automatically routes to the <strong>Safety Coordinator</strong> to classify Category (A, B, C), conduct 5-Why analysis, assign Permanent Corrective Action (PCA), and verify horizontal deployment.
-          </div>
-        </div>
 
         {/* Metadata Grid (Kaizen Style 4-Column Layout) */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4 p-4 bg-slate-50 border border-slate-200 rounded-xl">
@@ -319,22 +303,16 @@ export default function SafetyObservationForm({ onAddObservation, onCancel, onSu
           <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-red-800 uppercase tracking-wider flex items-center space-x-1.5">
-                <span>BEFORE CONDITION / HAZARD DESCRIPTION</span>
+                <span>BEFORE CONDITION</span>
                 <span className="text-red-500">*</span>
               </label>
-              <span className="text-[10px] font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">
-                Initiator Field
-              </span>
             </div>
-            <p className="text-[11px] text-slate-500">
-              State what was seen, what could go wrong, potential bodily harm, or equipment damage:
-            </p>
             <textarea
               value={beforeCondition}
               onChange={(e) => setBeforeCondition(e.target.value)}
               rows={4}
               className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-red-500"
-              placeholder="e.g. While feeding water chances of falling on air filter unit. Water leak pooling near 415V electrical box..."
+              placeholder="Enter before condition..."
               required
             />
           </div>
@@ -343,41 +321,27 @@ export default function SafetyObservationForm({ onAddObservation, onCancel, onSu
           <div className="border border-slate-200 rounded-xl p-4 bg-slate-50 space-y-2">
             <div className="flex items-center justify-between">
               <label className="text-xs font-bold text-emerald-800 uppercase tracking-wider flex items-center space-x-1.5">
-                <span>PROPOSED SAFEGUARD / IMMEDIATE CONTAINMENT</span>
+                <span>IMMEDIATE ACTION / SAFEGUARD</span>
               </label>
-              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full uppercase tracking-wider font-mono">
-                Recommendation
-              </span>
             </div>
-            <p className="text-[11px] text-slate-500">
-              Suggest quick immediate action or temporary control until coordinator completes full CAPA:
-            </p>
             <textarea
               value={suggestedControl}
               onChange={(e) => setSuggestedControl(e.target.value)}
               rows={4}
               className="w-full bg-white border border-slate-300 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500"
-              placeholder="e.g. Put caution tape around area, relocate water bottle stand 3 meters away from electrical enclosure..."
+              placeholder="Enter immediate action..."
             />
           </div>
 
         </div>
 
-        {/* Compulsory Photo Upload Block (Exact Kaizen look & feel) */}
+        {/* Compulsory Photo Upload Block */}
         <div className="border border-slate-200 rounded-xl p-5 bg-slate-50 space-y-4">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between border-b border-slate-200 pb-2 gap-2">
-            <div>
-              <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
-                <span>📸 BEFORE &amp; AFTER VISUAL PROOF DOCUMENTATION</span>
-                <span className="text-red-500 font-bold text-sm">*</span>
-              </h3>
-              <p className="text-[11px] text-slate-500 mt-0.5">
-                Upload or capture photos to verify both initial hazard and rectified/contained condition.
-              </p>
-            </div>
-            <span className="text-[10px] font-bold text-red-700 bg-red-100 border border-red-200 px-2.5 py-0.5 rounded-full font-mono uppercase tracking-wider shrink-0">
-              Compulsory Photos Required
-            </span>
+            <h3 className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center space-x-1.5">
+              <span>📸 BEFORE &amp; AFTER PHOTOS</span>
+              <span className="text-red-500 font-bold text-sm">*</span>
+            </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">

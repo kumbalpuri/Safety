@@ -692,6 +692,7 @@ export interface PsqTreeData {
   swapData?: PsqComponentSearchData;
 }
 
-export type UserPersona = 'operator' | 'committee' | 'manager';
+export type UserPersona = 'operator' | 'committee' | 'manager' | 'coordinator' | 'doctor';
+
 
 

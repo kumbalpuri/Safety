@@ -79,6 +79,7 @@ interface IncidentTimelineProps {
   selectedIncidentId?: string | null;
   onSelectIncident?: (id: string) => void;
   onAdvanceStage?: (incidentId: string, targetStage: number) => void;
+  isCoordinatorRole?: boolean;
 }
 
 // Built-in industrial incident progression presets for demonstration
@@ -408,7 +409,8 @@ export default function IncidentTimeline({
   incidents = [],
   selectedIncidentId,
   onSelectIncident,
-  onAdvanceStage
+  onAdvanceStage,
+  isCoordinatorRole = false
 }: IncidentTimelineProps) {
   // Merge live observations, near misses, and accidents into timeline items
   const timelineItems: IncidentTimelineItem[] = useMemo(() => {
@@ -610,9 +612,6 @@ export default function IncidentTimeline({
             <h2 className="text-xl font-bold text-slate-900 mt-1 flex items-center space-x-2">
               <span>Incident Progression Timeline</span>
             </h2>
-            <p className="text-xs text-slate-600 mt-0.5 max-w-3xl">
-              Track the end-to-end journey of safety anomalies: from initial hazard detection and 2-hour shift containment, through 5-Why root cause analysis, permanent CAPA engineering, and final 3-shift horizontal closure sign-off.
-            </p>
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
@@ -623,23 +622,26 @@ export default function IncidentTimeline({
               <Printer className="w-4 h-4 text-slate-600" />
               <span>Print Timeline</span>
             </button>
-            <button
-              onClick={handleSimulateNextStage}
-              disabled={currentStageNum >= 5}
-              className="flex items-center space-x-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
-              title="Simulate advancing to next safety stage"
-            >
-              <Play className="w-3.5 h-3.5 fill-current" />
-              <span>{currentStageNum >= 5 ? 'All Stages Complete' : `Advance to Stage ${currentStageNum + 1}`}</span>
-            </button>
-            {localStageProgress[activeIncident.id] && (
-              <button
-                onClick={handleResetStages}
-                className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition cursor-pointer"
-                title="Reset simulation"
-              >
-                <RefreshCw className="w-4 h-4" />
-              </button>
+            {isCoordinatorRole && (
+              <>
+                <button
+                  onClick={handleSimulateNextStage}
+                  disabled={currentStageNum >= 5}
+                  className="flex items-center space-x-2 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-bold transition shadow-sm cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed"
+                >
+                  <Play className="w-3.5 h-3.5 fill-current" />
+                  <span>{currentStageNum >= 5 ? 'All Stages Complete' : `Advance to Stage ${currentStageNum + 1}`}</span>
+                </button>
+                {localStageProgress[activeIncident.id] && (
+                  <button
+                    onClick={handleResetStages}
+                    className="p-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition cursor-pointer"
+                    title="Reset stage"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                  </button>
+                )}
+              </>
             )}
           </div>
         </div>
@@ -960,13 +962,9 @@ export default function IncidentTimeline({
                       </div>
                     )}
 
-                    {/* Quick Stage Controls if Current Active */}
-                    {isCurrentActive && (
-                      <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
-                        <div className="text-[11px] text-amber-800 font-semibold font-mono flex items-center space-x-1.5">
-                          <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-                          <span>Action required to fulfill SLA milestone</span>
-                        </div>
+                    {/* Quick Stage Controls if Current Active & Coordinator Role */}
+                    {isCoordinatorRole && isCurrentActive && (
+                      <div className="pt-3 border-t border-slate-100 flex items-center justify-end">
                         <button
                           onClick={(e) => {
                             e.stopPropagation();
@@ -986,17 +984,6 @@ export default function IncidentTimeline({
             </div>
           );
         })}
-      </div>
-
-      {/* Standard Operating Procedure Reference Footer */}
-      <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 text-xs text-slate-600 space-y-2">
-        <div className="flex items-center space-x-2 text-slate-800 font-bold uppercase tracking-wider font-mono">
-          <FileText className="w-4 h-4 text-slate-600" />
-          <span>EHS Quality &amp; Safety Standard SOP Reference</span>
-        </div>
-        <p className="leading-relaxed">
-          The 5-stage incident lifecycle enforces proactive workplace zero harm. Observations, Near Misses, and Accidents adhere strictly to ISO 45001 and IATF 16949 containment guidelines. Any overdue stage automatically triggers escalation to the Plant Leadership Gemba board.
-        </p>
       </div>
 
     </div>
